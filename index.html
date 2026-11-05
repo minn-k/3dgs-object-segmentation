@@ -1,0 +1,155 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>권상민 · 3DGS Segmentation Portfolio</title>
+<meta name="description" content="3D Gaussian Splatting 장면에서 물체를 하나씩 떼어내는 연구의 결과 사진">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<nav class="top">
+  <div class="wrap nav-in">
+    <a class="brand" href="#top">Sangmin Kwon</a>
+    <div class="links">
+      <a href="#goal">하려는 것</a><a href="#results">결과</a><a href="#fit">직무 연결</a><a href="#limits">한계</a><a href="#more">다른 포트폴리오</a>
+    </div>
+  </div>
+</nav>
+
+<header class="hero" id="top">
+  <div class="wrap">
+    <figure class="media opener"><img src="assets/hero_bicycle_ids.jpg" width="1176" height="774" alt="자전거와 벤치를 물체별 색으로 칠한 3D 장면 렌더">
+      <figcaption>3D 장면을 물체별 색으로 칠한 렌더. 바퀴살 사이로 벤치와 풀이 각자의 소속으로 남는다.</figcaption></figure>
+    <p class="eyebrow">3D Vision · Segmentation</p>
+    <h1>3D 장면에서<br>물체를 하나씩 떼어내기</h1>
+    <p class="lede">3D Gaussian Splatting 장면은 사진처럼 보여도 어디까지가 한 물체인지 모릅니다.
+      사진 속 물체를 3D 에서 깨끗하게 떼어내 옮기고 편집하고 시뮬레이션에 쓸 수 있게 만드는 연구를 하고 있습니다.
+      2026년 10월부터 진행 중인 미발표 연구라서 방법 설명은 줄이고 결과 사진 위주로 정리했습니다.</p>
+    <div class="cta">
+      <a class="btn primary" href="#results">결과 보기</a>
+      <a class="btn" href="https://minn-k.github.io/3dgs-isaac-sim-xpbd/" target="_blank" rel="noopener">3DGS-to-Sim 포트폴리오</a>
+      <a class="btn" href="https://minn-k.github.io/3d-representation-portfolio/" target="_blank" rel="noopener">Generative 3D 포트폴리오</a>
+    </div>
+    <div class="cards3">
+      <div class="card"><span class="k">문제</span>
+        <p>장면에서 물체를 꺼내면 조각이 붙어 나오거나 구멍이 난다. 사진별 2D 마스크에 틀린 곳이 섞이면 더 심해진다.</p></div>
+      <div class="card"><span class="k">목표</span>
+        <p>물체 하나만 꺼내도 형태가 온전하고, 다른 물체가 붙어 나오지 않는 3D 장면.</p></div>
+      <div class="card"><span class="k">지금까지</span>
+        <p>figurines 장면에서 물체 추출 IoU 88.9. 자전거처럼 가는 구조가 많은 장면도 물체별로 나뉜다.</p></div>
+    </div>
+  </div>
+</header>
+
+<section id="goal">
+  <div class="wrap">
+    <p class="eyebrow">무엇을 하려고 했나</p>
+    <h2>물체를 들어내면 잔해가 남는다</h2>
+    <p class="sub">기존 방법으로 나눈 장면에서 물체를 옮기면 경계가 지저분하게 잘리고 자리에 잔해가 남는다.
+      로봇이 물체를 집거나 시뮬레이터에 넣으려면 이 경계가 깨끗해야 한다.</p>
+    <figure class="media wide"><img src="assets/problem_move.jpg" width="1800" height="800" alt="원본 장면과 기존 방법으로 물체를 옮긴 장면 비교" loading="lazy">
+      <figcaption>왼쪽 원본 · 가운데 Gaussian Grouping · 오른쪽 FlashSplat. 접시와 그릇을 옮기자 장면이 깨진다.</figcaption></figure>
+    <p class="sub">입력으로 쓰는 2D 마스크도 문제다. 물체를 통째로 놓치거나 바퀴 틈까지 칠하는 오류가 있고, 이런 오류는 3D 결과로 그대로 옮겨 간다.
+      그래서 학습과 라벨 품질을 함께 손봤다.</p>
+    <div class="row2 crop43">
+      <figure class="media"><img src="assets/mask_problem_a.jpg" width="572" height="367" alt="바퀴 틈까지 자전거로 칠해진 결과" loading="lazy"></figure>
+      <figure class="media"><img src="assets/mask_problem_b.jpg" width="1100" height="838" alt="바퀴 아래 풀이 자전거 소속으로 딸려 온 결과" loading="lazy"></figure>
+    </div>
+    <p class="note">틈까지 칠한 마스크로 만든 결과. 바퀴 안쪽 풀과 벤치 일부가 자전거 소속이 된다.</p>
+  </div>
+</section>
+
+<section id="results">
+  <div class="wrap">
+    <p class="eyebrow">결과</p>
+    <h2>물체만 따로 꺼낸 결과</h2>
+    <figure class="media wide"><img src="assets/objects_strip.jpg" width="2400" height="340" alt="figurines 장면의 물체 7개를 각각 따로 렌더한 결과" loading="lazy">
+      <figcaption>figurines 장면의 물체 7개. 각 칸은 그 물체만 따로 렌더한 것이다.</figcaption></figure>
+    <figure class="media wide"><img src="assets/grid_figurines.jpg" width="1900" height="1934" alt="사진, 정답 마스크, 기존 방법과 이번 연구 결과 비교" loading="lazy">
+      <figcaption>왼쪽부터 사진 · 정답 마스크 · 일반 2DGS · BEA-GS(직접 재현) · 이번 연구의 구성별 결과. 도자기 손 주변 번짐과 카메라 아래 잔여물이 줄어든다. 오리 아래 큐브 잔재는 모든 구성에 남아 있다.</figcaption></figure>
+
+    <h3>기존 방법과 비교</h3>
+    <div class="table-wrap"><table class="metrics">
+      <tr><th>방법</th><th>렌더 IoU</th><th>물체 추출 IoU</th></tr>
+      <tr><td>FlashSplat</td><td>85.7</td><td>80.1</td></tr>
+      <tr><td>COB-GS</td><td>84.7</td><td>82.9</td></tr>
+      <tr><td>BEA-GS (직접 재현)</td><td>87.9</td><td>81.4</td></tr>
+      <tr class="ours"><td>이번 연구</td><td><b>92.7</b></td><td><b>88.9</b></td></tr>
+    </table></div>
+    <p class="note">figurines 장면, 테스트 4시점 × 물체 7개 평균, 1회 실행. 입력 마스크가 서로 달라서 방법과 마스크의 효과가 섞여 있다. BEA-GS 는 공개 코드가 없어 직접 재현한 값이며 논문 수치가 아니다.
+      학습은 그대로 두고 마스크만 바꿨을 때 렌더 88.4 → 92.7, 추출 83.6 → 88.9 였다.</p>
+
+    <h3>자전거 장면</h3>
+    <p class="sub">바퀴살과 벤치 살이 겹쳐 있어 가장 나누기 어려운 장면이다. 정답 마스크가 없어 사진으로 확인했다.</p>
+    <figure class="media wide"><img src="assets/grid_bicycle.jpg" width="1236" height="748" alt="자전거와 벤치를 각각 따로 렌더한 결과" loading="lazy">
+      <figcaption>자전거와 벤치를 각각 따로 렌더한 결과. 살 구조가 유지된다. 바퀴 아래쪽 풀 일부는 아직 딸려 나온다.</figcaption></figure>
+    <div class="row3 crop43">
+      <figure class="media"><img src="assets/moved_a.jpg" width="796" height="761" alt="자전거와 벤치를 떼어 놓은 장면 1" loading="lazy"></figure>
+      <figure class="media"><img src="assets/moved_b.jpg" width="1000" height="686" alt="자전거와 벤치를 떼어 놓은 장면 2" loading="lazy"></figure>
+      <figure class="media"><img src="assets/moved_c.jpg" width="982" height="744" alt="자전거와 벤치를 떼어 놓은 장면 3" loading="lazy"></figure>
+    </div>
+    <p class="note">뷰어에서 자전거와 벤치를 따로 옮긴 화면. 어두운 자리는 어떤 사진에도 찍히지 않은 바닥이다.</p>
+
+    <h3>마스크 자동 보정</h3>
+    <div class="row2">
+      <figure class="media"><img src="assets/pipe_input.jpg" width="898" height="569" alt="보정 전 마스크" loading="lazy"><figcaption>보정 전. 바퀴 안쪽까지 자전거로 칠해져 있다.</figcaption></figure>
+      <figure class="media"><img src="assets/pipe_final.jpg" width="895" height="569" alt="보정 후 마스크" loading="lazy"><figcaption>보정 후. 바퀴 속이 뒤쪽 벤치와 배경으로 돌아온다.</figcaption></figure>
+    </div>
+  </div>
+</section>
+
+<section class="fit" id="fit">
+  <div class="wrap">
+    <h2 class="sec">Applied Research Scientist 직무와의 연결</h2>
+    <div class="table-wrap"><table class="fit-table">
+      <tr><th>필요 역량</th><th>근거</th></tr>
+      <tr><td>데이터로 모델 개선</td><td>학습은 그대로 두고 마스크 품질만 높여 렌더 IoU +4.3, 추출 IoU +5.3 (figurines, 1회 실행)</td></tr>
+      <tr><td>Auto-labeling</td><td>공개 비전 모델을 조합해, 프레임마다 사람이 고치지 않아도 되는 라벨 생성 · 보정 파이프라인을 구축. 공개 가중치를 그대로 썼고 파인튜닝은 하지 않았다.</td></tr>
+      <tr><td>학습 · 평가</td><td>PyTorch 학습 코드와 CUDA 렌더러를 수정하고, 공개 방법과 재현 구현을 같은 장면에서 비교</td></tr>
+      <tr><td>실적용까지 구현</td><td>뷰어에 물체 선택 · 이동을 넣어 결과를 3D 로 확인. 앞선 연구에서는 CUDA 솔버(프레임당 5.7 ms)를 Isaac Sim 로봇 상호작용까지 연결 <a href="#more">→ 다른 포트폴리오</a></td></tr>
+      <tr><td>자율주행과의 접점</td><td>시점마다 어긋나는 라벨, 가는 구조, 프레임 단위 누락은 주행 영상 auto-labeling 에도 있는 문제다. 다만 주행 데이터에 적용한 경험은 아직 없다.</td></tr>
+    </table></div>
+  </div>
+</section>
+
+<section id="limits">
+  <div class="wrap">
+    <div class="callout warn">
+      <b>한계</b>
+      <ul>
+        <li>결과는 1회 실행이고, 정답 마스크로 평가한 장면은 figurines 하나다.</li>
+        <li>입력 마스크 품질에 민감하다. 마스크가 물체를 한 장도 찾지 못하면 복구하지 못한다.</li>
+        <li>자전거 장면의 화질은 일반 2DGS 보다 0.89 dB 낮다.</li>
+        <li>어떤 사진에도 찍히지 않은 면은 채우지 않는다. 정적 장면만 다룬다.</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section id="more">
+  <div class="wrap">
+    <p class="eyebrow">다른 포트폴리오</p>
+    <h2>같은 3D 표현을 다룬 앞선 연구</h2>
+    <p class="sub">물체 단위로 나뉘어야 물체마다 물성을 주고 시뮬레이터에 넣을 수 있다. 이번 분할 연구는 아래 두 연구의 앞 단계에 해당한다.</p>
+    <div class="more">
+      <a class="card" href="https://minn-k.github.io/3dgs-isaac-sim-xpbd/" target="_blank" rel="noopener">
+        <img src="assets/thumb_sim.jpg" width="680" height="379" alt="로봇 팔이 3DGS 식물을 잡는 Isaac Sim 화면" loading="lazy">
+        <div><h4>3DGS-to-Sim</h4><p>로봇이 만지고 변형하는 3DGS 디지털 트윈. APG-GS 물리와 NVIDIA Isaac Sim 연동, 영상 포함.</p></div></a>
+      <a class="card" href="https://minn-k.github.io/3d-representation-portfolio/" target="_blank" rel="noopener">
+        <img src="assets/thumb_generative.jpg" width="680" height="381" alt="생성한 로봇과 부위별 색 분류" loading="lazy">
+        <div><h4>Generative 3D → Editable Assets</h4><p>TRELLIS 로 생성한 3D Gaussian 을 편집과 물리가 가능한 에셋으로. APG-GS 논문 내용 포함.</p></div></a>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <p>권상민 · Sangmin Kwon — 한성대학교 컴퓨터공학 연구(Advisor: Prof. Heewon Kye). 진행 중인 미발표 연구입니다. 데이터: LeRF-Mask, Mip-NeRF 360.</p>
+  </div>
+</footer>
+</body>
+</html>
